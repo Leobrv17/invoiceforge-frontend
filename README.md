@@ -1,6 +1,6 @@
-# InvoiceForge — Démo front-only (React + Vite)
+# InvoiceForge — Front-only (React + Vite)
 
-Cette application est une **démo front-only** : toutes les fonctionnalités V1 sont simulées côté interface, et les modules V2 sont affichés comme « bientôt disponibles ». Aucun backend n’est nécessaire.
+Cette application présente la **version front-only** d’InvoiceForge : toutes les pages et fonctionnalités V1 sont accessibles côté interface, tandis que les modules V2 sont visibles et marqués comme “bientôt disponibles”.
 
 ## Prérequis
 
@@ -13,7 +13,7 @@ Cette application est une **démo front-only** : toutes les fonctionnalités V1 
 npm install
 ```
 
-## Lancer la démo
+## Lancer le projet
 
 ```bash
 npm run dev
@@ -21,7 +21,7 @@ npm run dev
 
 Ouvrez ensuite [http://localhost:5173](http://localhost:5173) dans votre navigateur.
 
-> Astuce : cliquez sur **Se connecter** pour simuler une connexion instantanée et accéder à tous les tableaux de bord.
+> Pour accéder au workspace, cliquez sur **Se connecter** : la connexion est simulée côté front.
 
 ## Build de production
 
@@ -32,6 +32,6 @@ npm run preview
 
 ## Structure
 
-- `src/App.tsx` : navigation simulée (dashboard, devis, factures, clients, exports RGPD, module TVA V2).
+- `src/App.tsx` : interface complète (dashboard, devis, factures, avoirs, clients, RGPD, modules V2).
 - `src/App.css` : thème bleu/blanc avec accents gris/noir.
 - `src/index.css` : styles globaux.

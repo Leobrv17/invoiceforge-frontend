@@ -28,29 +28,50 @@ type Client = {
   lastInvoice: string
 }
 
+type Tab =
+  | 'Dashboard'
+  | 'Devis'
+  | 'Factures'
+  | 'Avoirs'
+  | 'Clients'
+  | 'Données'
+  | 'TVA'
+  | 'Analyse'
+
+const tabs: Tab[] = [
+  'Dashboard',
+  'Devis',
+  'Factures',
+  'Avoirs',
+  'Clients',
+  'Données',
+  'TVA',
+  'Analyse',
+]
+
 const v1Highlights = [
   {
-    title: 'Devis et factures conformes',
-    description: 'Numérotation légale, Factur-X ready, statuts et documents immuables.',
+    title: 'Conformité & Factur-X ready',
+    description: 'Documents immuables, numérotation séquentielle et structure Factur-X.',
   },
   {
-    title: 'Avoirs traçables',
-    description: 'Corrections strictes via facture d’avoir liée à l’originale.',
+    title: 'Devis optionnels',
+    description: 'Création rapide, statuts complets et conversion devis → facture.',
   },
   {
-    title: 'RGPD & exports',
-    description: 'Exports CSV/JSON + ZIP des PDFs pour une portabilité complète.',
+    title: 'RGPD & portabilité',
+    description: 'Exports complets (ZIP, CSV, JSON) et gestion des données.',
   },
   {
-    title: 'Tableaux de bord',
-    description: 'CA facturé/encaissé, devis en cours et alertes impayés.',
+    title: 'Suivi commercial',
+    description: 'Tableaux de bord, alertes d’impayés et vision claire du CA.',
   },
 ]
 
 const v2Roadmap = [
   {
-    title: 'Gestion dynamique de la TVA',
-    description: 'Calcul automatique selon le régime fiscal et la date de facture.',
+    title: 'Gestion TVA multi-régimes',
+    description: 'Calcul dynamique en fonction de l’historique fiscal.',
   },
   {
     title: 'Livre des recettes fiscal',
@@ -58,7 +79,7 @@ const v2Roadmap = [
   },
   {
     title: 'Prédictions de seuils',
-    description: 'Projection du chiffre d’affaires annuel et alertes de dépassement.',
+    description: 'Projection du CA et alertes de dépassement réglementaire.',
   },
 ]
 
@@ -131,9 +152,22 @@ const initialClients: Client[] = [
   },
 ]
 
-const tabs = ['Dashboard', 'Devis', 'Factures', 'Clients', 'Données', 'TVA'] as const
-
-type Tab = (typeof tabs)[number]
+const initialCredits = [
+  {
+    id: 'AVO-2025-004',
+    invoice: 'FAC-2025-0029',
+    date: '10/03/2025',
+    amount: '120 €',
+    reason: 'Correction de ligne',
+  },
+  {
+    id: 'AVO-2025-003',
+    invoice: 'FAC-2025-0026',
+    date: '24/02/2025',
+    amount: '75 €',
+    reason: 'Geste commercial',
+  },
+]
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -141,6 +175,7 @@ function App() {
   const [invoices, setInvoices] = useState(initialInvoices)
   const [quotes, setQuotes] = useState(initialQuotes)
   const [clients] = useState(initialClients)
+  const [credits] = useState(initialCredits)
   const [showExportBanner, setShowExportBanner] = useState(false)
   const [notifications, setNotifications] = useState([
     'Facture FAC-2025-0029 en retard depuis 5 jours.',
@@ -159,7 +194,7 @@ function App() {
 
   const handleLogin = () => {
     setIsAuthenticated(true)
-    setNotifications((current) => ['Bienvenue dans la démo InvoiceForge !', ...current])
+    setNotifications((current) => ['Connexion réussie.', ...current])
   }
 
   const handleLogout = () => {
@@ -187,6 +222,9 @@ function App() {
       status: 'Brouillon',
     }
     setInvoices((current) => [newInvoice, ...current])
+    setQuotes((current) =>
+      current.map((item) => (item.id === quoteId ? { ...item, status: 'Accepté' } : item)),
+    )
     setNotifications((current) => [`Devis ${quoteId} converti en facture.`, ...current])
   }
 
@@ -202,13 +240,13 @@ function App() {
           <span className="brand-dot" />
           <div>
             <strong>InvoiceForge</strong>
-            <span>Démo front-only</span>
+            <span>Front-only — version produit</span>
           </div>
         </div>
         <nav className="top-links">
           <a href="#features">Fonctionnalités</a>
-          <a href="#demo">Démo</a>
-          <a href="#roadmap">Roadmap</a>
+          <a href="#workspace">Workspace</a>
+          <a href="#roadmap">V2</a>
         </nav>
         <div className="top-actions">
           {isAuthenticated ? (
@@ -226,26 +264,22 @@ function App() {
       <main>
         <section className="hero">
           <div>
-            <p className="pill">V1 complète · V2 annoncée</p>
-            <h1>
-              La vitrine de facturation conforme, prête pour la croissance des
-              indépendants.
-            </h1>
+            <p className="pill">Version front-only · V1 complète</p>
+            <h1>La facturation conforme pour micro-entreprises, prête à évoluer.</h1>
             <p className="hero-subtitle">
-              Toutes les fonctionnalités V1 sont visibles et interactives en mode
-              démo. Les modules V2 sont clairement indiqués comme “bientôt
-              disponibles”.
+              InvoiceForge regroupe devis, factures, avoirs, conformité RGPD et tableaux
+              de bord. Les modules V2 sont visibles mais indiqués comme à venir.
             </p>
             <div className="hero-actions">
               <button className="primary" onClick={handleLogin}>
-                Tester la démo instantanée
+                Accéder au workspace
               </button>
-              <button className="secondary">Télécharger la présentation</button>
+              <button className="secondary">Voir la documentation</button>
             </div>
             <div className="hero-metrics">
               <div>
                 <strong>Factur-X</strong>
-                <span>Prêt côté V1</span>
+                <span>Prêt technique</span>
               </div>
               <div>
                 <strong>RGPD</strong>
@@ -253,32 +287,32 @@ function App() {
               </div>
               <div>
                 <strong>TVA</strong>
-                <span>V2 annoncée</span>
+                <span>Activation V2</span>
               </div>
             </div>
           </div>
           <div className="hero-card">
-            <h3>Connexion instantanée</h3>
+            <h3>Accès immédiat</h3>
             <p>
-              Cliquez sur “Se connecter” et accédez aux tableaux, sans backend,
-              pour une démo fluide.
+              Naviguez dans toutes les pages comme si le produit était en production,
+              sans backend requis.
             </p>
             <div className="hero-card-actions">
               <button className="primary" onClick={handleLogin}>
-                Connexion express
+                Ouvrir le workspace
               </button>
-              <button className="ghost">Voir les rôles</button>
+              <button className="ghost">Configurer l’entreprise</button>
             </div>
-            <div className="hero-card-note">Aucun compte requis.</div>
+            <div className="hero-card-note">Aucune donnée réelle stockée.</div>
           </div>
         </section>
 
         <section className="section" id="features">
           <div className="section-header">
-            <h2>Fonctionnalités V1 incluses</h2>
+            <h2>V1 : fonctionnalités livrées</h2>
             <p>
-              Le socle V1 couvre le cycle complet devis → facture → avoir, la
-              conformité légale et les exports RGPD.
+              Le socle V1 couvre l’ensemble des flux commerciaux et légaux pour une
+              micro-entreprise.
             </p>
           </div>
           <div className="grid">
@@ -286,18 +320,18 @@ function App() {
               <article key={feature.title} className="card">
                 <h3>{feature.title}</h3>
                 <p>{feature.description}</p>
-                <span className="tag">Disponible maintenant</span>
+                <span className="tag">Disponible</span>
               </article>
             ))}
           </div>
         </section>
 
-        <section className="section muted" id="demo">
+        <section className="section muted" id="workspace">
           <div className="section-header">
-            <h2>Démo interactive (front-only)</h2>
+            <h2>Workspace InvoiceForge</h2>
             <p>
-              Connectez-vous instantanément pour explorer le tableau de bord, les
-              devis, les factures, les clients et l’espace RGPD.
+              Connectez-vous pour afficher les tableaux, les listes et les actions
+              courantes. Tout est simulé côté front.
             </p>
           </div>
 
@@ -322,8 +356,8 @@ function App() {
                 ))}
               </div>
               <div className="sidebar-cta">
-                <p>Besoin d’aide ?</p>
-                <button className="secondary">Contacter le support</button>
+                <p>Support & conformité</p>
+                <button className="secondary">Consulter les mentions</button>
               </div>
             </aside>
 
@@ -332,8 +366,8 @@ function App() {
                 <div className="panel-lock">
                   <h3>Connectez-vous pour accéder aux modules</h3>
                   <p>
-                    Cette démo est front-only : cliquez pour simuler une connexion
-                    instantanée.
+                    Mode front-only : la connexion est instantanée et ne dépend d’aucun
+                    backend.
                   </p>
                   <button className="primary" onClick={handleLogin}>
                     Se connecter
@@ -346,7 +380,7 @@ function App() {
                   <div className="panel-header">
                     <div>
                       <h3>{activeTab}</h3>
-                      <p>Navigation simulée, aucune donnée backend requise.</p>
+                      <p>Interface complète, flux simulés.</p>
                     </div>
                     <div className="panel-actions">
                       <button className="secondary">Créer</button>
@@ -379,7 +413,7 @@ function App() {
                           <div className="quick-actions">
                             <button className="primary">Nouvelle facture</button>
                             <button className="secondary">Nouveau devis</button>
-                            <button className="ghost">Importer un client</button>
+                            <button className="ghost">Ajouter un client</button>
                           </div>
                         </div>
                       </div>
@@ -466,6 +500,33 @@ function App() {
                     </div>
                   )}
 
+                  {activeTab === 'Avoirs' && (
+                    <div className="table-wrapper">
+                      <table>
+                        <thead>
+                          <tr>
+                            <th>Avoir</th>
+                            <th>Facture liée</th>
+                            <th>Date</th>
+                            <th>Montant</th>
+                            <th>Motif</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {credits.map((credit) => (
+                            <tr key={credit.id}>
+                              <td>{credit.id}</td>
+                              <td>{credit.invoice}</td>
+                              <td>{credit.date}</td>
+                              <td>{credit.amount}</td>
+                              <td>{credit.reason}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+
                   {activeTab === 'Clients' && (
                     <div className="table-wrapper">
                       <table>
@@ -531,6 +592,17 @@ function App() {
                       <span className="tag">Bientôt disponible</span>
                     </div>
                   )}
+
+                  {activeTab === 'Analyse' && (
+                    <div className="card upcoming-block">
+                      <h4>Analyse financière (V2)</h4>
+                      <p>
+                        Les analyses avancées et prédictions seront activées lors de
+                        la prochaine version.
+                      </p>
+                      <span className="tag">Bientôt disponible</span>
+                    </div>
+                  )}
                 </>
               )}
             </div>
@@ -539,10 +611,10 @@ function App() {
 
         <section className="section" id="roadmap">
           <div className="section-header">
-            <h2>Roadmap V2 — annoncée pour plus tard</h2>
+            <h2>V2 : fonctionnalités annoncées</h2>
             <p>
-              Les fonctionnalités suivantes sont prévues : elles sont indiquées
-              comme “bientôt disponibles” dans la démo.
+              Ces modules sont visibles dans l’interface, mais seront déployés dans une
+              version ultérieure.
             </p>
           </div>
           <div className="grid">
@@ -560,12 +632,12 @@ function App() {
       <footer className="footer">
         <div>
           <strong>InvoiceForge</strong>
-          <p>Démo front-only — aucune donnée backend requise.</p>
+          <p>Version front-only — interface complète sans backend.</p>
         </div>
         <div className="footer-links">
           <a href="#features">Fonctionnalités</a>
-          <a href="#demo">Démo</a>
-          <a href="#roadmap">Roadmap</a>
+          <a href="#workspace">Workspace</a>
+          <a href="#roadmap">V2</a>
         </div>
       </footer>
     </div>
